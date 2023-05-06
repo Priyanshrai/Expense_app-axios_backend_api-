@@ -23,6 +23,26 @@ const addUser = async (req,res,next) => {
     }
 }
 
+
+
+const loginUser = async (req,res,next)=>{
+  const { email, password } = req.body;
+
+  try {
+    const user = await UserDetails.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+
+ 
+}
+
 module.exports = {
-    addUser
+  addUser,
+  loginUser
 };
