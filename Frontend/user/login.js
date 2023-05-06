@@ -7,16 +7,23 @@ form.addEventListener("submit", (event)=>{
     const email=formData.get("email");
     const password=formData.get("password");
    
-    const obj = {
+    const data = {
         email: email,
         password:password
     };
-    axios.post("http://localhost:5000/users/login-user",obj)
-    .then((res)=>{
-        console.log(res);
+    axios.post("http://localhost:5000/users/login-user",data)
+    .then((response)=>{
+        const message = response.data.message;
+        const alert = document.createElement('div');
+        alert.classList.add('alert', 'alert-success');
+        alert.textContent = message;
+        document.querySelector('#form-container').appendChild(alert);
     })
-    .catch((err)=>{
-        console.log("Error adding User:",err);
-        showErrorOnScreen("failed to add user, Please Try again Later.");
+    .catch((error)=>{
+        const message = error.response.data.error;
+        const alert = document.createElement('div');
+        alert.classList.add('alert', 'alert-danger');
+        alert.textContent = message;
+        document.querySelector('#form-container').appendChild(alert);
     })
 })
