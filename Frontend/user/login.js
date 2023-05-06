@@ -27,3 +27,14 @@ form.addEventListener("submit", (event)=>{
         document.querySelector('#form-container').appendChild(alert);
     })
 })
+
+
+const formContainer = document.querySelector('#form-container');
+
+form.addEventListener('input', () => {
+  // remove any existing messages
+  const messages = formContainer.querySelectorAll('.alert');
+  messages.forEach(message => {
+    formContainer.removeChild(message);
+  });
+});

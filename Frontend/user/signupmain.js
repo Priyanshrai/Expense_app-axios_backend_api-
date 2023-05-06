@@ -19,6 +19,6 @@ form.addEventListener("submit", (event)=>{
     })
     .catch((err)=>{
         console.log("Error adding User:",err);
-        showErrorOnScreen("failed to add user, Please Try again Later.");
+       
     })
 })
