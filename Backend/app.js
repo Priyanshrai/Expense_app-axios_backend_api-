@@ -12,11 +12,13 @@ app.use(cors());
 
 
 const expenseRoutes=require("./routes/expenses")
+const userRoutes=require("./routes/users")
 
 app.use(bodyParser.json());
 
 
 app.use('/expense',expenseRoutes);
+app.use("/users",userRoutes)
 
 app.use(errorController.get404);
 

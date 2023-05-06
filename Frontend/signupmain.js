@@ -1,4 +1,4 @@
-const form=document.getElementById('signUp');
+const form = document.getElementById('signUp');
 
 form.addEventListener("submit", (event)=>{
     event.preventDefault();
@@ -13,8 +13,7 @@ form.addEventListener("submit", (event)=>{
         email: email,
         password:password
     };
-    axios
-    .post("url",obj)
+    axios.post("http://localhost:5000/users/add-user",obj)
     .then((res)=>{
         console.log(res);
     })
