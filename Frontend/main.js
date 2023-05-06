@@ -65,9 +65,7 @@ function editUserDetails(Expenses, Description, Category, userId) {
     document.getElementById('description').value = Description;
     document.getElementById('Category').value = Category;
 
-    // expenseAmountInput.value=Expenses;
-    // descriptionInput.value=Description;
-    // CategoryInput.value=Category;
+   
 
     deleteUser(userId)
 }
