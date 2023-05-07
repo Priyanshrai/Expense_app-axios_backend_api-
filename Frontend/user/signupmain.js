@@ -14,11 +14,29 @@ form.addEventListener("submit", (event)=>{
         password:password
     };
     axios.post("http://localhost:5000/users/add-user",obj)
-    .then((res)=>{
-        console.log(res);
+    .then((response)=>{
+        const message = response.data.error;
+        const alert = document.createElement('div');
+        alert.classList.add('alert', 'alert-success');
+        alert.textContent = message;
+        document.querySelector('#form-container').appendChild(alert);
     })
-    .catch((err)=>{
-        console.log("Error adding User:",err);
+    .catch((error)=>{
+        const message = error.response.data.error;
+        const alert = document.createElement('div');
+        alert.classList.add('alert', 'alert-danger');
+        alert.textContent = message;
+        document.querySelector('#form-container').appendChild(alert);
        
     })
 })
+
+const formContainer = document.querySelector('#form-container');
+
+form.addEventListener('input', () => {
+  // remove any existing messages
+  const messages = formContainer.querySelectorAll('.alert');
+  messages.forEach(message => {
+    formContainer.removeChild(message);
+  });
+});

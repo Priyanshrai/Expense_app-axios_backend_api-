@@ -26,27 +26,22 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h4 class="text-center">Login</h4>
+      <div class="col-md-6 col-lg-4">
+        <h1 class="text-center mb-4">Login</h1>
+        <form id="login">
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email" required>
+          
           </div>
-          <div class="card-body">
-            <form id="login">
-              <div class="form-group" >
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email">
-              </div>
-              <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password">
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">Login</button>
-            </form>
-            <div id="form-container"></div>
-            <p>Need an Account ? <a href="./signUp.html">Sign Up</a></p>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
           </div>
-        </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p>Need an account? <a href="./signUp.html">Sign up</a></p>
+        <div id="form-container"></div>
       </div>
     </div>
   </div>

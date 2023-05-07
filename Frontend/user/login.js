@@ -18,6 +18,9 @@ form.addEventListener("submit", (event)=>{
         alert.classList.add('alert', 'alert-success');
         alert.textContent = message;
         document.querySelector('#form-container').appendChild(alert);
+        if (response.status === 200) {
+          window.location.href = '../index.html';
+      }
     })
     .catch((error)=>{
         const message = error.response.data.error;
