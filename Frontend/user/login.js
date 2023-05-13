@@ -18,6 +18,7 @@ form.addEventListener("submit", (event)=>{
         alert.classList.add('alert', 'alert-success');
         alert.textContent = message;
         document.querySelector('#form-container').appendChild(alert);
+       localStorage.setItem('token',response.data.token)
         if (response.status === 200) {
           window.location.href = '../index.html';
       }

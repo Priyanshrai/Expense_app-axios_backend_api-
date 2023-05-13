@@ -1,25 +1,21 @@
 function saveToLocalStorage(event) {
-   
+   event.preventDefault();
 
     const Expenses = document.getElementById('expenseAmount').value
     const Description = document.getElementById('description').value
     const Category = document.getElementById('Category').value
 
-    // const Expenses = event.target.expenseAmount.value;
-    // const Description = event.target.description.value;
-    // const Category = event.target.Category.value;
+
     const obj = {
         Expenses: Expenses,
         Description: Description,
         Category: Category
     }
-    // localStorage.setItem(obj.Description, JSON.stringify(obj));
-    // showNewUserOnScreen(obj)
-    axios.post("http://localhost:5000/expense/add-expense", obj)
+    const token=localStorage.getItem('token')
+    axios.post("http://localhost:5000/expense/add-expense", obj, {headers:{"Authorization":token}} )
         .then((res) => {
             console.log(res)
             showNewUserOnScreen(res.data.newExpenseDetail)
-            showNewUserOnScreen(obj)
         })
         .catch((err) => {
             console.error("Error adding user:", err);
@@ -30,30 +26,36 @@ function saveToLocalStorage(event) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-
-
-    axios.get("http://localhost:5000/expense/get-expense")
-        .then((res) => {
-            console.log(res)
-            for (i = 0; i < res.data.allUsers.length; i++) {
-                showNewUserOnScreen(res.data.allUsers[i])
-            }
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-
-})
-
+    const token = localStorage.getItem("token");
+  
+    axios.get("http://localhost:5000/expense/get-expense", {
+      headers: { "Authorization": token }
+    })
+      .then((res) => {
+        res.data.allExpenses.forEach((expense) => {
+          showNewUserOnScreen(expense);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
 
 function showNewUserOnScreen(user) {
     const parentNode = document.getElementById('listOfUsers');
     const userId = user.id;
-    const childHTML = `<li id=${user.id}>${user.Expenses} - ${user.Description} - ${user.Category}   
-                            <button class="btn btn-danger btn-sm"  onclick=deleteUser('${user.id}')> Delete User </button>
-                            <button class="btn btn-warning btn-sm"  onclick=editUserDetails('${user.Expenses}','${user.Description}','${user.Category}','${user.id}')>Edit User </button>
-                           
-                         </li>` //esa likha aayga
+    const childHTML = `<li class="list-group-item" id=${user.id}>
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-1">${user.Expenses}</h5>
+        <p class="mb-1">${user.Description} - ${user.Category}</p>
+      </div>
+      <div>
+        <button class="btn btn-danger btn-sm mr-2" onclick=deleteUser('${user.id}')>Delete</button>
+        <button class="btn btn-warning btn-sm" onclick=editUserDetails('${user.Expenses}','${user.Description}','${user.Category}','${user.id}')>Edit</button>
+      </div>
+    </div>
+  </li>` //esa likha aayga
 
     parentNode.innerHTML = parentNode.innerHTML + childHTML;
 }
@@ -73,9 +75,8 @@ function editUserDetails(Expenses, Description, Category, userId) {
 // deleteUser('abc@gmail.com')
 
 function deleteUser(userId) {
-
-
-    axios.delete(`http://localhost:5000/expense/delete-expense/${userId}`)
+    const token = localStorage.getItem("token");
+    axios.delete(`http://localhost:5000/expense/delete-expense/${userId}`,{headers:{"Authorization":token}})
         .then(() => {
             removeUserFromScreen(userId);
         })
