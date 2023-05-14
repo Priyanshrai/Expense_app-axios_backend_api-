@@ -1,34 +1,45 @@
-
-
 const express=require('express');
 const bodyParser = require("body-parser");
+
 const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
 var cors = require("cors");
+//env
+const dotenv = require("dotenv");
+dotenv.config();
 
 
 const app=express();
 app.use(cors());
 
-
+//routes
 const expenseRoutes=require("./routes/expenses")
 const userRoutes=require("./routes/users")
+const orderRoutes=require("./routes/purchase")
 
 //app.use(bodyParser.erlencoded()); //this is for handling forms
 app.use(express.json()); //this is for handling jsons
-// app.use(bodyParser.json()); 
+app.use(bodyParser.json()); 
 
 
 app.use('/expense',expenseRoutes);
 app.use("/users",userRoutes)
+app.use('/purchase',orderRoutes)
 
 app.use(errorController.get404);
 
+//models
 const User = require("./models/users")
 const Expense = require("./models/expenses")
+const Order=require("./models/orders")
 
+//association
 User.hasMany(Expense);
 Expense.belongsTo(User)
+
+
+User.hasMany(Order);
+Order.belongsTo(User)
 
 sequelize
   .sync()
