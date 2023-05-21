@@ -21,6 +21,11 @@ const UserDetails = sequelize.define ('users',{
       password: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      ispremiumuser:Sequelize.BOOLEAN,
+      totalExpense: {
+        type: Sequelize.INTEGER,
+        allowNull: true, // or false if it should always have a value
       }
 
 })
