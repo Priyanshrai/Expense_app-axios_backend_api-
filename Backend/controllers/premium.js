@@ -7,17 +7,8 @@ const sequelize = require('sequelize');
 const getPremium=async (req, res) => {
     try {
       const leaderboardofusers=await User.findAll({
-        attributes: ['id','name',[sequelize.fn('sum',sequelize.col('Expenses')),'total_cost']],
-        include:[
-          {
-            model:Expense,
-            attributes:[]
-          }
-        ],
-        group:['users.id'],
-        order:[['total_cost','DESC']]
-      
-      
+       
+        order:[['totalExpense','DESC']] 
       });
        
      res.status(200).json(leaderboardofusers)

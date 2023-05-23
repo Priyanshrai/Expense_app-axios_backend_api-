@@ -138,7 +138,7 @@ window.addEventListener("DOMContentLoaded", async function () {
               const ul = document.createElement("ul");
               response.data.forEach((item) => {
                 const li = document.createElement("li");
-                li.textContent = `${item.name} - Total Cost: ${item.total_cost}`;
+                li.textContent = `Name: ${item.name} - Total Cost: ${item.totalExpense}`;
                 ul.appendChild(li);
               });
 

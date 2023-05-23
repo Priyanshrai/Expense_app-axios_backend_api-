@@ -23,6 +23,10 @@ const UserDetails = sequelize.define ('users',{
         allowNull: false
       },
       ispremiumuser:Sequelize.BOOLEAN,
+      totalExpense: {
+        type: Sequelize.INTEGER,
+        defaultValue:0, // or false if it should always have a value
+      }
 
 })
 module.exports = UserDetails;
