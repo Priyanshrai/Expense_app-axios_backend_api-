@@ -8,9 +8,9 @@ const authenticate = (req,res,next) =>{
         const token =req.header("Authorization");
         // console.log(token);
         const user = jwt.verify(token,'1234565');
-        console.log('userId >>>>>', user.userId)
+        // console.log('userId >>>>>', user.userId)
         User.findByPk(user.userId).then(user=>{
-        console.log(JSON.stringify(user));
+        // console.log(JSON.stringify(user));
        
         req.user= user; // global obj common among both function flowing from one fn to next req would be common
         // console.log(user)
