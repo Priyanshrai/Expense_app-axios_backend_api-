@@ -95,6 +95,7 @@ function removeUserFromScreen(userId) {
 }
 
 window.addEventListener("DOMContentLoaded", async function () {
+  
   try {
     const token = localStorage.getItem("token");
     const response = await axios.get(
@@ -107,6 +108,8 @@ window.addEventListener("DOMContentLoaded", async function () {
     console.log(response);
 
     if (response.data.isPremiumUser) {
+      
+      
       // User is a premium user, hide the "Buy Premium" button
       const buyPremiumButton = document.getElementById("rzp-button");
       buyPremiumButton.style.display = "none";
@@ -117,7 +120,7 @@ window.addEventListener("DOMContentLoaded", async function () {
 
       //Display the LeaderBoard Button
       const parent_Node = document.getElementById("leaderboard-button-parent");
-      const child_HTML = `  <button id="leaderboard-button" class="btn btn-primary btn-block">Show Leaderboard</button>`;
+      const child_HTML = `  <button id="leaderboard-button" class="btn btn-outline-secondary btn-sm">Show Leaderboard</button>`;
       parent_Node.innerHTML = parent_Node.innerHTML + child_HTML;
 
       {
@@ -134,19 +137,50 @@ window.addEventListener("DOMContentLoaded", async function () {
               );
 
               // Process the leaderboard data and display it on the page
+              const table = document.createElement("table");
+              table.classList.add("table", "table-striped", "table-hover","table-bordered","border-primary");
               
-              const ul = document.createElement("ul");
+              // Create the table header
+              const thead = document.createElement("thead");
+              const headerRow = document.createElement("tr");
+              
+              const nameHeader = document.createElement("th");
+              nameHeader.textContent = "Name of Users";
+              
+              const expenseHeader = document.createElement("th");
+              expenseHeader.textContent = "Total Expenses";
+              
+              headerRow.appendChild(nameHeader);
+              headerRow.appendChild(expenseHeader);
+              
+              thead.appendChild(headerRow);
+              table.appendChild(thead);
+              
+              // Create the table body
+              const tbody = document.createElement("tbody");
               response.data.forEach((item) => {
-                const li = document.createElement("li");
-                li.textContent = `Name: ${item.name} - Total Cost: ${item.totalExpense}`;
-                ul.appendChild(li);
+                const row = document.createElement("tr");
+              
+                const nameCell = document.createElement("td");
+                nameCell.textContent = item.name;
+              
+                const expenseCell = document.createElement("td");
+                expenseCell.textContent = item.totalExpense;
+              
+                row.appendChild(nameCell);
+                row.appendChild(expenseCell);
+              
+                tbody.appendChild(row);
               });
-
-              // Assuming there is a div element with id "list-container" in your HTML where you want to append the list.
-              const listContainer = document.getElementById("leaderboard-list");
-              listContainer.appendChild(ul);
-
+              
+              table.appendChild(tbody);
+              
+              // Assuming there is a div element with id "table-container" in your HTML where you want to append the table.
+              const tableContainer = document.getElementById("leaderboard-list");
+              tableContainer.appendChild(table);
+              
               console.log(response.data);
+              
 
               
               // ... handle the leaderboard data and display it as needed
@@ -209,6 +243,7 @@ document.getElementById("rzp-button").onclick = async function (e) {
         const button = document.getElementById("rzp-button");
         button.style.display = "none"; // Hide the button
         alert("You are a Premium User Now");
+        location.reload();
       },
     };
 
@@ -219,4 +254,26 @@ document.getElementById("rzp-button").onclick = async function (e) {
     console.error(err);
     alert("Something Went Wrong");
   }
+};
+
+
+function download(){
+  const token = localStorage.getItem("token");
+  axios.get('http://localhost:5000/expense/download', {headers : {Authorization : token}})
+  .then((response)=>{
+    if(response.status ===200){
+      //the backend is essentially sending a download link
+      //which if we open in browser, the file would download
+      var a = document.createElement("a");
+      a.href = response.data.fileUrl;
+      a.download = 'myespense.csv';
+      a.click();
+    }else {
+      throw new Error(response.data.message)
+    }
+  })
+  .catch((err)=> {
+    showError(err)
+  });
+
 };

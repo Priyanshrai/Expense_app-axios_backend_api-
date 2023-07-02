@@ -31,60 +31,58 @@
 <body>
   <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
   <div class="container">
+   
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
-        <h3 class="text-center mb-4">Expense Tracker  <button id="logout" class="btn btn-info btn-block btn-sm" onclick="location.href='./user/login.html'">Logout</button> </h3>
-        
+        <h2 class="mb-4">Expense Tracker  <button id="logout" class="btn btn-warning btn-sm float-end" onclick="location.href='./user/login.html'">Logout</button> </h2>
+        <div id="premium-message" class="alert alert-success" role="alert">
+          
+        </div>        
         <form onsubmit="saveToLocalStorage(event)">
           <div class="form-group">
             <label for="expenseAmount">Expense Amount:</label>
-            <input type="number" class="form-control" id="expenseAmount" name="expenseAmount" placeholder="Money Spent" required>
+            <input type="number" class="form-control-sm" id="expenseAmount" name="expenseAmount" placeholder="Money Spent" required>
           </div>
           <div class="form-group">
             <label for="description">Description:</label>
-            <input type="text" class="form-control" id="description" name="description" placeholder="Text input">
+            <input type="text" class="form-control-sm" id="description" name="description" placeholder="Text input">
           </div>
           <div class="form-group">
             <label for="Category">Choose a Category:</label>
-            <select class="form-control" id="Category" name="Category">
+            <select class="form-control form-select form-select-sm" id="Category" name="Category"  aria-label=".form-select-sm example">
+              
+               <option selected>Choose Category</option>
               <option>Daily</option>
               <option>Entertainment</option>
               <option>Rent</option>
               <option>Travel</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Add Expense</button>
+          <br>
+          <button type="submit" class="btn btn-success float-start btn-sm">Add Expense</button>
+          <button id="rzp-button" class="btn btn-secondary float-end btn-sm">Buy Premium</button>
         </form>
         <br>
-        <p id="premium-message"></p>
-        <button id="rzp-button" class="btn btn-primary btn-block">Buy Premium</button>
-
-        
-        
-        
-
+               
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <h3>Expenses</h3>
-        <div class="list-group" id='listOfUsers'></div>
         
-      </div>
-    </div>
-  </div>
+        <hr>
 
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
+        <h4>Expenses <button onclick="download()" id="downloadExpense" class="btn btn-info btn-sm float-end">Download File</button> </h4>
+        <br>
         
-          <div id="leaderboard-button-parent">
-          
-          
+        <div class="list-group" id='listOfUsers'></div>
+        <hr>
+        
+        <div id="leaderboard-button-parent">   
           <div id="leaderboard-list" class="mt-3">
             </div>
-          
-        </div>
+            </div>
+        
       </div>
     </div>
   </div>
+
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"

@@ -1,13 +1,29 @@
 const expense = require("../models/expenses");
 const User = require("../models/users");
 const sequelize = require("../util/database");
+const AWS = require('aws-sdk');
+
+function uploadToS3(data,filename){
+const BUCKET_NAME='';
+const IAM_USER_KEY = '';
+const IAM_USER_SECRET = '';
+}
+
+const downloadexpense = async (req,res) => {
+const expenses = await req.user.getExpenses();
+console.log(expenses);
+const stringifiedExpenses = JSON.stringify(expenses);
+const filename = 'Expense.txt';
+const fileURL = uploadToS3(stringifiedExpenses,filename);
+res.status(200).json({fileURL,success:true})
+}
+
+
 
 const addExpense = async (req, res, next) => {
-  
-
   try {
     const t = await sequelize.transaction();
-  const { Expenses, Description, Category } = req.body;
+    const { Expenses, Description, Category } = req.body;
 
     if (Expenses === undefined || Expenses.length === 0) {
       return res
@@ -26,7 +42,6 @@ const addExpense = async (req, res, next) => {
     );
 
     const totalExpense = Number(req.user.totalExpense) + Number(Expenses);
-    
 
     await User.update(
       {
@@ -39,13 +54,11 @@ const addExpense = async (req, res, next) => {
     );
     await t.commit();
     res.status(200).json({ newExpenseDetail: createdExpense });
-
   } catch (err) {
     await t.rollback();
     return res.status(500).json({ success: false, error: err });
   }
 };
-
 
 const getExpense = async (req, res, next) => {
   try {
@@ -114,4 +127,5 @@ module.exports = {
   addExpense,
   getExpense,
   deleteExpense,
+  downloadexpense,
 };
