@@ -12,7 +12,7 @@ const purchasePremium = async (req, res) => {
         key_secret: process.env.RAZORPAY_KEY_SECRET
       });
   
-      const amountInPaise = 2500 * 100; // Convert amount to paise
+      const amountInPaise = 2500; // Convert amount to paise
   
       rzp.orders.create({ amount: amountInPaise, currency: "INR" }, (err, order) => {
         if (err) {

@@ -1,3 +1,7 @@
+
+const token = localStorage.getItem("token");
+let currentPage = 1;
+
 function saveToLocalStorage(event) {
   event.preventDefault();
 
@@ -10,13 +14,13 @@ function saveToLocalStorage(event) {
     Description: Description,
     Category: Category,
   };
-  const token = localStorage.getItem("token");
+
   axios
     .post("http://localhost:5000/expense/add-expense", obj, {
       headers: { Authorization: token },
     })
     .then((res) => {
-      console.log(res);
+      
       showNewUserOnScreen(res.data.newExpenseDetail);
     })
     .catch((err) => {
@@ -27,40 +31,86 @@ function saveToLocalStorage(event) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("token");
+  
+  const page = 1;
+  getExpenses(page);
+});
 
+function getExpenses(page) {
   axios
-    .get("http://localhost:5000/expense/get-expense", {
+    .get(`http://localhost:5000/expense/get-expense?page=${page}`, {
       headers: { Authorization: token },
     })
     .then((res) => {
-      res.data.allExpenses.forEach((expense) => {
-        showNewUserOnScreen(expense);
-      });
+      const data = res.data;
+      showNewUsersOnScreen(data.allExpenses);
+      showPagination(data);
     })
     .catch((err) => {
       console.log(err);
     });
-});
-
-function showNewUserOnScreen(user) {
-  const parentNode = document.getElementById("listOfUsers");
-  const userId = user.id;
-  const childHTML = `<li class="list-group-item" id=${user.id}>
-    <div class="d-flex justify-content-between align-items-center">
-      <div>
-        <h5 class="mb-1">${user.Expenses}</h5>
-        <p class="mb-1">${user.Description} - ${user.Category}</p>
-      </div>
-      <div>
-        <button class="btn btn-danger btn-sm mr-2" onclick=deleteUser('${user.id}')>Delete</button>
-        <button class="btn btn-warning btn-sm" onclick=editUserDetails('${user.Expenses}','${user.Description}','${user.Category}','${user.id}')>Edit</button>
-      </div>
-    </div>
-  </li>`; //esa likha aayga
-
-  parentNode.innerHTML = parentNode.innerHTML + childHTML;
 }
+
+function showNewUsersOnScreen(expenses) {
+  const parentNode = document.getElementById("listOfUsers");
+  parentNode.innerHTML = '';
+
+  expenses.forEach((expense) => {
+    const userId = expense.id;
+    const childHTML = `<li class="list-group-item" id=${userId}>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">${expense.Expenses}</h5>
+          <p class="mb-1">${expense.Description} - ${expense.Category}</p>
+        </div>
+        <div>
+          <button class="btn btn-danger btn-sm mr-2" onclick="deleteUser('${userId}')">Delete</button>
+          <button class="btn btn-warning btn-sm" onclick="editUserDetails('${expense.Expenses}','${expense.Description}','${expense.Category}','${userId}')">Edit</button>
+        </div>
+      </div>
+    </li>`;
+    parentNode.innerHTML += childHTML;
+  });
+}
+
+
+function showPagination({
+  currentPage,
+  hasNextPage,
+  nextPage,
+  hasPreviousPage,
+  previousPage,
+  lastPage,
+}) {
+  const pagination = document.getElementById("pagination");
+  pagination.innerHTML = '';
+
+  if (hasPreviousPage) {
+    const btnPrevious = createPageButton(previousPage, 'Previous', 'btn-secondary');
+    pagination.appendChild(btnPrevious);
+  }
+
+  const btnCurrent = createPageButton(currentPage, currentPage, 'btn-primary');
+  btnCurrent.disabled = true;
+  pagination.appendChild(btnCurrent);
+
+  if (hasNextPage) {
+    const btnNext = createPageButton(nextPage, 'Next', 'btn-secondary');
+    pagination.appendChild(btnNext);
+  }
+}
+
+function createPageButton(pageNumber, buttonText, buttonClass) {
+  const button = document.createElement('button');
+  button.innerText = buttonText;
+  button.className = `btn ${buttonClass} mx-1`;
+  button.addEventListener('click', () => {
+    currentPage = pageNumber;
+    getExpenses(currentPage);
+  });
+  return button;
+}
+
 // edit User
 
 function editUserDetails(Expenses, Description, Category, userId) {
@@ -71,10 +121,7 @@ function editUserDetails(Expenses, Description, Category, userId) {
   deleteUser(userId);
 }
 
-// deleteUser('abc@gmail.com')
-
 function deleteUser(userId) {
-  const token = localStorage.getItem("token");
   axios
     .delete(`http://localhost:5000/expense/delete-expense/${userId}`, {
       headers: { Authorization: token },
@@ -88,16 +135,15 @@ function deleteUser(userId) {
 }
 
 function removeUserFromScreen(userId) {
-  const parentNode = document.getElementById("listOfUsers");
   const childNodeToBeDeleted = document.getElementById(userId);
-
-  parentNode.removeChild(childNodeToBeDeleted);
+  if (childNodeToBeDeleted) {
+    childNodeToBeDeleted.remove();
+  }
 }
 
 window.addEventListener("DOMContentLoaded", async function () {
   
   try {
-    const token = localStorage.getItem("token");
     const response = await axios.get(
       "http://localhost:5000/purchase/premiumstatus",
       {
@@ -105,7 +151,7 @@ window.addEventListener("DOMContentLoaded", async function () {
       }
     );
 
-    console.log(response);
+    
 
     if (response.data.isPremiumUser) {
       
@@ -128,7 +174,7 @@ window.addEventListener("DOMContentLoaded", async function () {
           .getElementById("leaderboard-button")
           .addEventListener("click", async function () {
             try {
-              const token = localStorage.getItem("token");
+             
               const response = await axios.get(
                 "http://localhost:5000/premium/leaderboard",
                 {
@@ -179,7 +225,7 @@ window.addEventListener("DOMContentLoaded", async function () {
               const tableContainer = document.getElementById("leaderboard-list");
               tableContainer.appendChild(table);
               
-              console.log(response.data);
+            
               
 
               
@@ -207,11 +253,12 @@ window.addEventListener("DOMContentLoaded", async function () {
     console.error(err);
     alert("Something Went Wrong");
   }
+  getExpenses(currentPage);
 });
 
 document.getElementById("rzp-button").onclick = async function (e) {
   try {
-    const token = localStorage.getItem("token");
+   
     const response = await axios.get(
       "http://localhost:5000/purchase/premiummembership",
       {
@@ -219,7 +266,7 @@ document.getElementById("rzp-button").onclick = async function (e) {
       }
     );
 
-    console.log(response);
+   
 
     const options = {
       key: response.data.key_id,
@@ -257,23 +304,40 @@ document.getElementById("rzp-button").onclick = async function (e) {
 };
 
 
-function download(){
-  const token = localStorage.getItem("token");
-  axios.get('http://localhost:5000/expense/download', {headers : {Authorization : token}})
-  .then((response)=>{
-    if(response.status ===200){
-      //the backend is essentially sending a download link
-      //which if we open in browser, the file would download
-      var a = document.createElement("a");
-      a.href = response.data.fileUrl;
-      a.download = 'myespense.csv';
-      a.click();
-    }else {
-      throw new Error(response.data.message)
-    }
-  })
-  .catch((err)=> {
-    showError(err)
-  });
+function download() {
+  
+  axios
+    .get("http://localhost:5000/expense/download", {
+      headers: { "Authorization": token }, // Corrected the quotation marks
+    })
+    
+    .then((response) => {
+      
+            
+      if (response.status == 200) {
+        // The backend is essentially sending a download link
+        // which, if opened in the browser, will download the file
+        var a = document.createElement("a");
+        a.href = response.data.fileURL;
+        a.download = "myexpense.csv";
+        a.click();
+      } else {
+        
+        throw new Error(response.data.message);
+      }
+    })
+    .catch((err) => {
+      console.log(err.response.data.message);
+  alert(err.response.data.message);
+    });
+}
 
-};
+window.addEventListener("DOMContentLoaded",() => {
+  const page = 1;
+  axios.get(`http://localhost:5000/expense/get-expense?page=${page}`)
+  .then((res)=>{
+    showNewUserOnScreen()
+
+  })
+
+})

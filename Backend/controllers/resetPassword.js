@@ -54,7 +54,7 @@ return res.status(200).json({
 throw new Error("User doesn't exist"); 
 } 
 } catch (err) { 
-console.error(err); 
+
 return res.json({ message: err, success: false }); 
 } 
 }; 

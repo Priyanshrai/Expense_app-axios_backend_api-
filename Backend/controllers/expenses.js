@@ -1,21 +1,38 @@
 const expense = require("../models/expenses");
 const User = require("../models/users");
 const sequelize = require("../util/database");
-const AWS = require('aws-sdk');
 
-function uploadToS3(data,filename){
-const BUCKET_NAME='';
-const IAM_USER_KEY = '';
-const IAM_USER_SECRET = '';
-}
+const UserServices = require('../services/userservices')
+
+const S3Service =  require ('../services/S3services')
+
+
 
 const downloadexpense = async (req,res) => {
-const expenses = await req.user.getExpenses();
+
+  try{
+    
+    if(!req.user.ispremiumuser){
+      return res.status(401).json({ success: false, message: 'User is not a premium User'})
+  }
+
+
+const expenses = await UserServices.getExpenses(req);
 console.log(expenses);
 const stringifiedExpenses = JSON.stringify(expenses);
-const filename = 'Expense.txt';
-const fileURL = uploadToS3(stringifiedExpenses,filename);
+
+//it Should depend upon the userid
+const userid = req.user.id;
+
+const filename = `Expense${userid}/${new Date()}.txt`;
+const fileURL = await S3Service.uploadToS3(stringifiedExpenses,filename);
+console.log(fileURL);
 res.status(200).json({fileURL,success:true})
+
+} catch(err){
+  console.log(err);
+res.status(500).json({fileURL: '',success: false, err:err })
+}
 }
 
 
@@ -60,19 +77,39 @@ const addExpense = async (req, res, next) => {
   }
 };
 
-const getExpense = async (req, res, next) => {
-  try {
-    // console.log(req.user.id)
-    const expenses = await expense.findAll({ where: { userId: req.user.id } });
+const ITEMS_PER_PAGE = 2;
 
-    res.status(200).json({ allExpenses: expenses });
-    // console.log(expenses)
+const getExpense = async (req, res, next) => {
+  const page = +req.query.page || 1;
+  try {
+    // Fetch the total number of items in the database table
+    const totalItems = await expense.count();
+
+    const expenses = await expense.findAll({
+      offset: (page - 1) * ITEMS_PER_PAGE,
+      limit: ITEMS_PER_PAGE,
+    });
+
+    res.status(200).json({
+      allExpenses: expenses,
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+      nextPage: page + 1,
+      hasPreviousPage: page > 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+    });
   } catch (error) {
     console.log(error);
     console.log("Get Expense is Failing", JSON.stringify(error));
     res.status(500).json({ error: error });
   }
 };
+
+
+
+
+
 
 const deleteExpense = async (req, res) => {
   try {
